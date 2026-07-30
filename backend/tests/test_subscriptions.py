@@ -25,16 +25,6 @@ class FakeRequest:
         return State()
 
 @pytest_asyncio.fixture
-async def admin_user():
-    from app.models.user import UserRole
-    return User(
-        id=str(uuid.uuid4()),
-        email="admin-sub@test.com",
-        role=UserRole.ADMIN,
-        organization_id=str(uuid.uuid4())
-    )
-
-@pytest_asyncio.fixture
 async def sample_product(db: AsyncSession):
     product = Product(
         name=f"Test Product {uuid.uuid4()}",
@@ -157,3 +147,39 @@ async def test_cancel_subscription(db: AsyncSession, admin_user: User, sample_pl
     
     assert cancel_res.is_success
     assert cancel_res.value.status == SubscriptionStatus.CANCELLED
+
+@pytest.mark.asyncio
+async def test_get_all_subscriptions_eager_loads(
+    admin_user: User,
+    sample_organization: Organization,
+    sample_plan: ProductPlan,
+    db: AsyncSession
+):
+    sub_in = SubscriptionCreate(
+        product_plan_id=sample_plan.id,
+        organization_id=sample_organization.id,
+        notes="Eager load test"
+    )
+    
+    sub_res = await subscription_service.create_subscription(db, sub_in, admin_user, FakeRequest())
+    assert sub_res.is_success
+    
+    # Close and recreate session to ensure everything is purged and we test a true separate fetch
+    await db.commit()
+    db.expunge_all()
+    
+    # Fetch all subscriptions via service (which internally calls get_multi)
+    res = await subscription_service.get_all_subscriptions(db)
+    
+    assert res.is_success
+    assert len(res.value) > 0
+    
+    found = False
+    for sub in res.value:
+        if sub.id == sub_res.value.id:
+            found = True
+            # Check eager loaded nested model
+            assert sub.product_plan is not None
+            assert sub.product_plan.id == sample_plan.id
+    
+    assert found

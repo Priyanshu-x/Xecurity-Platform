@@ -8,13 +8,23 @@ from app.models.subscription import Subscription
 from app.models.plan import ProductPlan
 from app.schemas.subscription import SubscriptionCreate, SubscriptionUpdate
 from app.common.enums import SubscriptionStatus
+from app.models.plan import ProductPlanCapability
 
 class SubscriptionRepository(BaseRepository[Subscription, SubscriptionCreate, SubscriptionUpdate]):
     
+    async def get_multi(self, db: AsyncSession, *, skip: int = 0, limit: int = 100) -> List[Subscription]:
+        result = await db.execute(
+            select(Subscription)
+            .options(selectinload(Subscription.product_plan).selectinload(ProductPlan.capabilities).selectinload(ProductPlanCapability.capability))
+            .offset(skip)
+            .limit(limit)
+        )
+        return list(result.scalars().all())
+
     async def get_with_relations(self, db: AsyncSession, id: str) -> Optional[Subscription]:
         result = await db.execute(
             select(Subscription)
-            .options(selectinload(Subscription.product_plan).selectinload(ProductPlan.capabilities))
+            .options(selectinload(Subscription.product_plan).selectinload(ProductPlan.capabilities).selectinload(ProductPlanCapability.capability))
             .where(Subscription.id == id)
         )
         return result.scalars().first()
@@ -24,7 +34,7 @@ class SubscriptionRepository(BaseRepository[Subscription, SubscriptionCreate, Su
     ) -> List[Subscription]:
         result = await db.execute(
             select(Subscription)
-            .options(selectinload(Subscription.product_plan).selectinload(ProductPlan.capabilities))
+            .options(selectinload(Subscription.product_plan).selectinload(ProductPlan.capabilities).selectinload(ProductPlanCapability.capability))
             .where(Subscription.organization_id == organization_id)
             .offset(skip)
             .limit(limit)
