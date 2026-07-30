@@ -4,6 +4,10 @@ from app.core.config import settings
 from app.core.exceptions import global_exception_handler
 from app.api.main import api_router
 from app.api.routes import health
+from app.services.audit_service import setup_audit_logging
+
+# Initialize event listeners
+setup_audit_logging()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
