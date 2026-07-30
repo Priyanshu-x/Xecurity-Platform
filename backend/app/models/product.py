@@ -30,3 +30,4 @@ class Product(Base, BaseModelMixin):
     status = Column(Enum(ProductStatus), default=ProductStatus.BETA, nullable=False)
     
     plans = relationship("ProductPlan", back_populates="product", cascade="all, delete-orphan")
+    deployments = relationship("Deployment", back_populates="product", cascade="all, delete-orphan")

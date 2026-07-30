@@ -10,3 +10,4 @@ class Organization(Base, BaseModelMixin):
 
     users = relationship("User", back_populates="organization", cascade="all, delete-orphan")
     subscriptions = relationship("Subscription", back_populates="organization", cascade="all, delete-orphan")
+    deployments = relationship("Deployment", back_populates="organization", cascade="all, delete-orphan")
