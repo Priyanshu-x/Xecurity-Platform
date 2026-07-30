@@ -1,5 +1,6 @@
 import enum
 from sqlalchemy import Column, String, Enum, Text
+from sqlalchemy.orm import relationship
 from app.core.database import Base
 from app.models.base_model import BaseModelMixin
 
@@ -27,3 +28,5 @@ class Product(Base, BaseModelMixin):
     documentation_url = Column(String, nullable=True)
     
     status = Column(Enum(ProductStatus), default=ProductStatus.BETA, nullable=False)
+    
+    plans = relationship("ProductPlan", back_populates="product", cascade="all, delete-orphan")

@@ -20,3 +20,10 @@ class PlanTier(str, Enum):
 class PlanStatus(str, Enum):
     ACTIVE = "ACTIVE"
     DEPRECATED = "DEPRECATED"
+
+class SubscriptionStatus(str, Enum):
+    ACTIVE = "ACTIVE"
+    EXPIRED = "EXPIRED"
+    CANCELLED = "CANCELLED"
+    SUSPENDED = "SUSPENDED"
+    TRIAL = "TRIAL"

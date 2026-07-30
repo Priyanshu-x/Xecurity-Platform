@@ -20,8 +20,9 @@ class ProductPlan(BaseModelMixin, Base):
     trial_days = Column(Integer, nullable=True, default=0)
 
     # Relationships
-    product = relationship("Product", backref="plans")
+    product = relationship("Product", back_populates="plans")
     capabilities = relationship("ProductPlanCapability", back_populates="plan", cascade="all, delete-orphan")
+    subscriptions = relationship("Subscription", back_populates="product_plan", cascade="all, delete-orphan")
 
 class ProductPlanCapability(BaseModelMixin, Base):
     __tablename__ = "product_plan_capabilities"

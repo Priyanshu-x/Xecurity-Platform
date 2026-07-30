@@ -23,4 +23,4 @@ class User(Base, BaseModelMixin):
     # Nullable for the global platform OWNER
     organization_id = Column(String, ForeignKey("organizations.id"), nullable=True)
     
-    organization = relationship("Organization", backref="users")
+    organization = relationship("Organization", back_populates="users")
