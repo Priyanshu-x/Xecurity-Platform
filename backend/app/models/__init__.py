@@ -4,3 +4,4 @@ from app.models.audit import AuditLog
 from app.models.product import Product, ProductStatus
 from app.models.release import Release
 from app.models.capability import Capability, ProductCapability
+from app.models.plan import ProductPlan, ProductPlanCapability

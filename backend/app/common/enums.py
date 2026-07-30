@@ -10,3 +10,13 @@ class BaseEnum(str, Enum):
 class SortOrder(str, Enum):
     ASC = "asc"
     DESC = "desc"
+
+class PlanTier(str, Enum):
+    COMMUNITY = "COMMUNITY"
+    PROFESSIONAL = "PROFESSIONAL"
+    ENTERPRISE = "ENTERPRISE"
+    GOVERNMENT = "GOVERNMENT"
+
+class PlanStatus(str, Enum):
+    ACTIVE = "ACTIVE"
+    DEPRECATED = "DEPRECATED"
