@@ -1,9 +1,8 @@
 import enum
-import uuid
 from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Enum
-from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from app.models.base_model import BaseModelMixin
 
 class UserRole(str, enum.Enum):
     OWNER = "OWNER"
@@ -11,10 +10,9 @@ class UserRole(str, enum.Enum):
     SUPPORT = "SUPPORT"
     VIEWER = "VIEWER"
 
-class User(Base):
+class User(Base, BaseModelMixin):
     __tablename__ = "users"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     
@@ -26,4 +24,3 @@ class User(Base):
     organization_id = Column(String, ForeignKey("organizations.id"), nullable=True)
     
     organization = relationship("Organization", backref="users")
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
