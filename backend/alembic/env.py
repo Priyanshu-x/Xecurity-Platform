@@ -22,6 +22,11 @@ import os
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
+from app.models.release import Release, ReleaseArtifact
+from app.models.activation_request import ActivationRequest
+from app.models.activation_request_event import ActivationRequestEvent
+from app.models.license_artifact import LicenseArtifact
+
 from app.core.database import Base
 from app.core.config import settings
 import app.models

@@ -1,47 +1,63 @@
-from typing import Optional, Any, Dict
+from typing import List, Optional, Any, Dict
 from pydantic import BaseModel, Field
 from datetime import datetime
 
-from app.models.release import ReleaseChannel, ReleasePlatform, ReleaseArchitecture, InstallerType
+from app.models.release import ReleaseChannel, ReleaseStatus, ReleasePlatform, ReleaseArchitecture, ArtifactType
 
-class ReleaseBase(BaseModel):
-    product_id: str
-    version: str
-    version_code: int
-    channel: ReleaseChannel
+class ReleaseArtifactBase(BaseModel):
     platform: ReleasePlatform
     architecture: ReleaseArchitecture
-    installer_type: InstallerType
+    artifact_type: ArtifactType
     
     filename: str
     download_path: str
     sha256: str
     filesize: int
     
+    signature: Optional[str] = None
+    signature_algorithm: Optional[str] = None
+    signed_at: Optional[datetime] = None
+
+class ReleaseArtifactCreate(ReleaseArtifactBase):
+    pass
+
+class ReleaseArtifactResponse(ReleaseArtifactBase):
+    id: str
+    release_id: str
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class ReleaseBase(BaseModel):
+    product_id: str
+    version: str
+    build_number: int
+    channel: ReleaseChannel
+    status: ReleaseStatus = ReleaseStatus.DRAFT
+    
     release_notes: Optional[str] = None
     mandatory: bool = False
-    minimum_license_plan: Optional[str] = None
+    
+    minimum_license_build: Optional[int] = None
+    minimum_lms_build: Optional[int] = None
     is_latest: bool = False
 
 class ReleaseCreate(ReleaseBase):
-    pass
+    artifacts: List[ReleaseArtifactCreate] = []
 
 class ReleaseUpdate(BaseModel):
     version: Optional[str] = None
-    version_code: Optional[int] = None
+    build_number: Optional[int] = None
     channel: Optional[ReleaseChannel] = None
-    platform: Optional[ReleasePlatform] = None
-    architecture: Optional[ReleaseArchitecture] = None
-    installer_type: Optional[InstallerType] = None
-    
-    filename: Optional[str] = None
-    download_path: Optional[str] = None
-    sha256: Optional[str] = None
-    filesize: Optional[int] = None
+    status: Optional[ReleaseStatus] = None
     
     release_notes: Optional[str] = None
     mandatory: Optional[bool] = None
-    minimum_license_plan: Optional[str] = None
+    
+    minimum_license_build: Optional[int] = None
+    minimum_lms_build: Optional[int] = None
     is_latest: Optional[bool] = None
 
 class ReleaseResponse(ReleaseBase):
@@ -51,6 +67,16 @@ class ReleaseResponse(ReleaseBase):
     created_at: datetime
     updated_at: datetime
     is_deleted: bool
+    
+    artifacts: List[ReleaseArtifactResponse] = []
 
     class Config:
         from_attributes = True
+
+class CheckUpdateResponse(BaseModel):
+    update_available: bool
+    mandatory: bool = False
+    reason: Optional[str] = None
+    current_build: int
+    latest_build: Optional[int] = None
+    release: Optional[ReleaseResponse] = None

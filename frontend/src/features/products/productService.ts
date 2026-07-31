@@ -3,7 +3,7 @@ import { Product, ProductCreate, ProductUpdate } from './types';
 
 export const productService = {
   getProducts: async (includeDeleted: boolean = false): Promise<Product[]> => {
-    const response = await api.get<Product[]>('/products', {
+    const response = await api.get<Product[]>('/products/', {
       params: { include_deleted: includeDeleted },
     });
     return response.data;
@@ -15,7 +15,7 @@ export const productService = {
   },
 
   createProduct: async (data: ProductCreate): Promise<Product> => {
-    const response = await api.post<Product>('/products', data);
+    const response = await api.post<Product>('/products/', data);
     return response.data;
   },
 

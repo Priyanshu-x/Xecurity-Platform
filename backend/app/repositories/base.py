@@ -20,10 +20,14 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         result = await db.execute(select(self.model).where(self.model.id == id))
         return result.scalars().first()
 
-    async def get_multi(self, db: AsyncSession, *, skip: int = 0, limit: int = 100) -> List[ModelType]:
-        # Filter out deleted if 'is_deleted' exists
+    async def get_multi(self, db: AsyncSession, *, skip: int = 0, limit: int = 100, include_deleted: bool = False, **kwargs) -> List[ModelType]:
         stmt = select(self.model)
-        if hasattr(self.model, "is_deleted"):
+        for key, value in kwargs.items():
+            if value is not None:
+                stmt = stmt.where(getattr(self.model, key) == value)
+                
+        # Filter out deleted if 'is_deleted' exists
+        if hasattr(self.model, "is_deleted") and not include_deleted:
             stmt = stmt.where(self.model.is_deleted == False)
         
         stmt = stmt.offset(skip).limit(limit)

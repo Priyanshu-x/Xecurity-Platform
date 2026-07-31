@@ -3,7 +3,7 @@
 import { useAuth } from '@/features/auth/authContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { LogOut, LayoutDashboard, Key, Users, Building, Package, ShieldCheck, Zap, Layers, CreditCard } from 'lucide-react';
+import { LogOut, LayoutDashboard, Key, Users, Building, Package, ShieldCheck, Zap, Layers, CreditCard, Monitor } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, user, logoutState } = useAuth();
@@ -26,6 +26,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { name: 'Dashboard', icon: LayoutDashboard, href: '/' },
+    { name: 'Requests', icon: Key, href: '/activation-requests' },
+    { name: 'Devices', icon: Monitor, href: '/devices' },
     { name: 'Organizations', icon: Building, href: '/organizations' },
     { name: 'Products', icon: Package, href: '/products' },
     { name: 'Capabilities', icon: Zap, href: '/capabilities' },
@@ -33,6 +35,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Subscriptions', icon: CreditCard, href: '/subscriptions' },
     { name: 'Deployments', icon: ShieldCheck, href: '/deployments' },
     { name: 'Licenses', icon: Key, href: '/licenses' },
+    { name: 'Releases', icon: Package, href: '/releases' },
     { name: 'Users', icon: Users, href: '/users' },
   ];
 

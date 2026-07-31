@@ -3,7 +3,7 @@ import { Organization, OrganizationCreate, OrganizationUpdate } from './types';
 
 export const organizationService = {
   getOrganizations: async (includeDeleted: boolean = false): Promise<Organization[]> => {
-    const response = await api.get<Organization[]>('/organizations', {
+    const response = await api.get<Organization[]>('/organizations/', {
       params: { include_deleted: includeDeleted }
     });
     return response.data;
@@ -15,7 +15,7 @@ export const organizationService = {
   },
 
   createOrganization: async (data: OrganizationCreate): Promise<Organization> => {
-    const response = await api.post<Organization>('/organizations', data);
+    const response = await api.post<Organization>('/organizations/', data);
     return response.data;
   },
 

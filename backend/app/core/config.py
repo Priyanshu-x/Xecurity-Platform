@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "change_this_in_production"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
-    LICENSE_PRIVATE_KEY_PATH: str = "/app/keys/dev_private.pem"
+    LICENSE_PRIVATE_KEY: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

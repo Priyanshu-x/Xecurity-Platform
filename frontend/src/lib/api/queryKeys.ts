@@ -14,4 +14,7 @@ export const queryKeys = {
   subscriptions: createEntityKeys('subscriptions'),
   deployments: createEntityKeys('deployments'),
   licenses: createEntityKeys('licenses'),
+  releases: createEntityKeys('releases'),
+  devices: createEntityKeys('devices'),
+  activationRequests: createEntityKeys('activation-requests'),
 };

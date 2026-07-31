@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.core.database import AsyncSessionLocal
+import app.models # Ensure all models are registered
 from app.models.user import User, UserRole
 from app.core.security import get_password_hash
 

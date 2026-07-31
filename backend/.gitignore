@@ -8,3 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Storage and environment
+storage/
+.env
+.env.*

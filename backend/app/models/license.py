@@ -10,11 +10,11 @@ class License(Base):
     __tablename__ = "licenses"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
-    subscription_id = Column(String, ForeignKey("subscriptions.id", ondelete="RESTRICT"), nullable=False, index=True)
-    deployment_id = Column(String, ForeignKey("deployments.id", ondelete="CASCADE"), nullable=False, index=True)
+    subscription_id = Column(String, ForeignKey("subscriptions.id", ondelete="RESTRICT"), nullable=True, index=True)
+    deployment_id = Column(String, ForeignKey("deployments.id", ondelete="CASCADE"), nullable=True, index=True)
     organization_id = Column(String, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
     product_id = Column(String, ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True)
-    product_plan_id = Column(String, ForeignKey("product_plans.id", ondelete="RESTRICT"), nullable=False, index=True)
+    product_plan_id = Column(String, ForeignKey("product_plans.id", ondelete="RESTRICT"), nullable=True, index=True)
     
     status = Column(Enum(LicenseStatus), default=LicenseStatus.ACTIVE, nullable=False)
     
@@ -23,6 +23,8 @@ class License(Base):
     
     payload_json = Column(JSON, nullable=False)
     notes = Column(String, nullable=True)
+    
+    device_id = Column(String, ForeignKey("devices.id", ondelete="SET NULL"), nullable=True, index=True)
 
     # Relationships
     subscription = relationship("Subscription", backref="licenses")
@@ -30,3 +32,4 @@ class License(Base):
     organization = relationship("Organization", backref="licenses")
     product = relationship("Product", backref="licenses")
     product_plan = relationship("ProductPlan", backref="licenses")
+    artifacts = relationship("LicenseArtifact", back_populates="license", cascade="all, delete-orphan")
