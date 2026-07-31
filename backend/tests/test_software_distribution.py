@@ -3,7 +3,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import FastAPI
 
-from app.models.release import Release, ReleaseChannel, ReleasePlatform, ReleaseArchitecture, InstallerType
+from app.models.release import Release, ReleaseChannel, ReleasePlatform, ReleaseArchitecture
 from app.models.product import Product
 from app.repositories.release import release_repository
 from app.services.release_service import release_service

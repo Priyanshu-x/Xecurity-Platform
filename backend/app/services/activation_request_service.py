@@ -162,25 +162,24 @@ class ActivationRequestService:
             valid_until = (datetime.now(timezone.utc) + timedelta(days=30 * int(config["validity_months"]))).isoformat()
             
         payload = {
-            "schema_version": 1,
             "license_id": license_id,
             "license_type": config.get("license_type", "TRIAL"),
-            "state": "ACTIVE",
             "issued_to": config["organization_id"],
-            "issued_at": datetime.now(timezone.utc).isoformat(),
-            "valid_until": valid_until,
-            "hardware_tokens": req.hardware_tokens if req.hardware_tokens is not None else [],
-            "product_slug": "wfa",
-            "product_version": "1.0.0"
+            "machine_fingerprint": req.fingerprint,
+            "issue_date": datetime.now(timezone.utc).isoformat(),
+            "expiry_date": valid_until or "9999-12-31T23:59:59+00:00",
+            "grace_period_days": 3,
+            "features": ["ADB_ACQUISITION", "CRYPT15_DECRYPTION", "TIMELINE_EXPLORER", "MEDIA_GALLERY", "PDF_REPORTING", "OCR_TEXT_EXTRACTION", "AI_SEMANTIC_SEARCH", "CASE_COLLABORATION"],
+            "tokens": req.hardware_tokens if req.hardware_tokens is not None else {}
         }
         
         # 3. Canonicalize and Sign
         canonical_json, signature_b64 = sign_payload(payload)
         
-        wfalic_data = {
-            "payload": json.loads(canonical_json.decode('utf-8')),
-            "signature": signature_b64
-        }
+        # WFA expects a flat dictionary where the signature is alongside the payload fields
+        wfalic_data = json.loads(canonical_json.decode('utf-8'))
+        wfalic_data["signature"] = signature_b64
+        
         wfalic_content = json.dumps(wfalic_data, indent=2).encode('utf-8')
         
         # 4. Save Artifact
