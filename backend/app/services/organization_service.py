@@ -7,23 +7,24 @@ from app.models.user import User
 from app.schemas.organization import OrganizationCreate, OrganizationUpdate
 from app.repositories.organization_repository import organization_repo
 from app.common.result import Result
-from app.services.event_service import event_service
-from app.models.audit import ActionType, EntityType
+from app.events.bus import EventBus
+from app.events.events import DomainEvent
+
+event_bus = EventBus()
 
 class OrganizationService:
     async def create_organization(self, db: AsyncSession, org_in: OrganizationCreate, current_user: User, request: Request) -> Result[Organization]:
         org = await organization_repo.create(db, obj_in=org_in, created_by=current_user.id)
         
-        await event_service.log_event(
-            db=db,
-            action=ActionType.CREATE,
-            entity_type=EntityType.ORGANIZATION,
+        await event_bus.publish(DomainEvent(
+            entity="Organization",
             entity_id=org.id,
-            actor_id=current_user.id,
-            organization_id=org.id, # Organization belongs to itself essentially
-            request=request,
-            details={"name": org.name}
-        )
+            action="ORGANIZATION_CREATED",
+            old_value=None,
+            new_value=org_in.model_dump(exclude_unset=True),
+            actor=current_user.id,
+            request_id=getattr(request.state, "request_id", None)
+        ), db=db)
         return Result.ok(org)
 
     async def get_organization(self, db: AsyncSession, org_id: str) -> Result[Organization]:
@@ -43,16 +44,15 @@ class OrganizationService:
         
         updated_org = await organization_repo.update(db, db_obj=org, obj_in=org_in, updated_by=current_user.id)
         
-        await event_service.log_event(
-            db=db,
-            action=ActionType.UPDATE,
-            entity_type=EntityType.ORGANIZATION,
+        await event_bus.publish(DomainEvent(
+            entity="Organization",
             entity_id=updated_org.id,
-            actor_id=current_user.id,
-            organization_id=updated_org.id,
-            request=request,
-            details=org_in.model_dump(exclude_unset=True)
-        )
+            action="ORGANIZATION_UPDATED",
+            old_value=None,
+            new_value=org_in.model_dump(exclude_unset=True),
+            actor=current_user.id,
+            request_id=getattr(request.state, "request_id", None)
+        ), db=db)
         return Result.ok(updated_org)
 
     async def delete_organization(self, db: AsyncSession, org_id: str, current_user: User, request: Request) -> Result[None]:
@@ -62,15 +62,15 @@ class OrganizationService:
             
         await organization_repo.soft_delete(db, id=org_id, deleted_by=current_user.id)
         
-        await event_service.log_event(
-            db=db,
-            action=ActionType.DELETE,
-            entity_type=EntityType.ORGANIZATION,
+        await event_bus.publish(DomainEvent(
+            entity="Organization",
             entity_id=org_id,
-            actor_id=current_user.id,
-            organization_id=org_id,
-            request=request
-        )
+            action="ORGANIZATION_DELETED",
+            old_value=None,
+            new_value=None,
+            actor=current_user.id,
+            request_id=getattr(request.state, "request_id", None)
+        ), db=db)
         return Result.ok(None)
 
 organization_service = OrganizationService()

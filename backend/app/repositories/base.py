@@ -40,7 +40,7 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return db_obj
 
     async def update(
-        self, db: AsyncSession, *, db_obj: ModelType, obj_in: Union[UpdateSchemaType, Dict[str, Any]]
+        self, db: AsyncSession, *, db_obj: ModelType, obj_in: Union[UpdateSchemaType, Dict[str, Any]], **kwargs
     ) -> ModelType:
         obj_data = {c.name: getattr(db_obj, c.name) for c in db_obj.__table__.columns}
         if isinstance(obj_in, dict):
@@ -65,7 +65,7 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             await db.flush()
         return obj
 
-    async def soft_delete(self, db: AsyncSession, *, id: Any) -> Optional[ModelType]:
+    async def soft_delete(self, db: AsyncSession, *, id: Any, **kwargs) -> Optional[ModelType]:
         """Soft delete an entity if it supports is_deleted"""
         from datetime import datetime, timezone
         obj = await self.get(db=db, id=id)

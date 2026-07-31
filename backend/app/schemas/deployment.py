@@ -2,6 +2,8 @@ from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
 from app.common.enums import DeploymentEnvironment, DeploymentStatus
+from app.schemas.organization import OrganizationResponse
+from app.schemas.product import ProductResponse
 
 class DeploymentBase(BaseModel):
     name: str
@@ -26,5 +28,8 @@ class DeploymentResponse(DeploymentBase):
     last_ping_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
+
+    organization: Optional[OrganizationResponse] = None
+    product: Optional[ProductResponse] = None
 
     model_config = ConfigDict(from_attributes=True)

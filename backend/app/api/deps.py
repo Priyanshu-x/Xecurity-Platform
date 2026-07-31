@@ -31,12 +31,14 @@ async def get_current_user(
         if user_id is None or token_type != "access":
             raise credentials_exception
         token_data = TokenPayload(**payload)
-    except JWTError:
+    except JWTError as e:
+        print(f"JWTError: {e}")
         raise credentials_exception
         
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
     if user is None:
+        print(f"User not found for user_id: {user_id}")
         raise credentials_exception
     return user
 

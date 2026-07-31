@@ -43,10 +43,11 @@ class DeploymentService:
             db=db
         )
         
-        return Success(DeploymentResponse.model_validate(deployment))
+        deployment_with_rels = await deployment_repository.get_with_relations(db, id=deployment.id)
+        return Success(DeploymentResponse.model_validate(deployment_with_rels))
 
     async def get_deployment(self, db: AsyncSession, deployment_id: str) -> Result[DeploymentResponse]:
-        deployment = await deployment_repository.get(db, id=deployment_id)
+        deployment = await deployment_repository.get_with_relations(db, id=deployment_id)
         if not deployment or deployment.is_deleted:
             return NotFoundError("Deployment not found")
             
@@ -78,7 +79,8 @@ class DeploymentService:
             db=db
         )
         
-        return Success(DeploymentResponse.model_validate(deployment))
+        deployment_with_rels = await deployment_repository.get_with_relations(db, id=deployment.id)
+        return Success(DeploymentResponse.model_validate(deployment_with_rels))
 
     async def delete_deployment(
         self, db: AsyncSession, deployment_id: str, actor: User, request: Request

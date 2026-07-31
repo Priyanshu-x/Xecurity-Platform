@@ -76,7 +76,8 @@ class LicenseService:
             request_id=getattr(request.state, "request_id", None)
         ), db=db)
         
-        return Success(LicenseResponse.model_validate(license))
+        license_with_rels = await license_repository.get_with_relations(db, id=license.id)
+        return Success(LicenseResponse.model_validate(license_with_rels))
         
     async def revoke_license(
         self, db: AsyncSession, license_id: str, revoke_in: LicenseRevoke, current_user: User, request: Request
@@ -107,10 +108,11 @@ class LicenseService:
             request_id=getattr(request.state, "request_id", None)
         ), db=db)
         
-        return Success(LicenseResponse.model_validate(license))
+        license_with_rels = await license_repository.get_with_relations(db, id=license.id)
+        return Success(LicenseResponse.model_validate(license_with_rels))
         
     async def get_license(self, db: AsyncSession, license_id: str) -> Result[LicenseResponse]:
-        license = await license_repository.get(db, id=license_id)
+        license = await license_repository.get_with_relations(db, id=license_id)
         if not license:
             return NotFoundError("License not found")
         return Success(LicenseResponse.model_validate(license))

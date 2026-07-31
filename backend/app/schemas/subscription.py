@@ -3,6 +3,7 @@ from typing import Optional
 from datetime import datetime
 from app.common.enums import SubscriptionStatus
 from app.schemas.plan import ProductPlanResponse
+from app.schemas.organization import OrganizationResponse
 
 class SubscriptionBase(BaseModel):
     product_plan_id: str
@@ -28,5 +29,6 @@ class SubscriptionResponse(SubscriptionBase):
     updated_at: datetime
 
     product_plan: Optional[ProductPlanResponse] = None
+    organization: Optional[OrganizationResponse] = None
 
     model_config = ConfigDict(from_attributes=True)

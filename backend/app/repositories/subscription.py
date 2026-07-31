@@ -15,7 +15,10 @@ class SubscriptionRepository(BaseRepository[Subscription, SubscriptionCreate, Su
     async def get_multi(self, db: AsyncSession, *, skip: int = 0, limit: int = 100) -> List[Subscription]:
         result = await db.execute(
             select(Subscription)
-            .options(selectinload(Subscription.product_plan).selectinload(ProductPlan.capabilities).selectinload(ProductPlanCapability.capability))
+            .options(
+                selectinload(Subscription.product_plan).selectinload(ProductPlan.capabilities).selectinload(ProductPlanCapability.capability),
+                selectinload(Subscription.organization)
+            )
             .offset(skip)
             .limit(limit)
         )
@@ -24,7 +27,10 @@ class SubscriptionRepository(BaseRepository[Subscription, SubscriptionCreate, Su
     async def get_with_relations(self, db: AsyncSession, id: str) -> Optional[Subscription]:
         result = await db.execute(
             select(Subscription)
-            .options(selectinload(Subscription.product_plan).selectinload(ProductPlan.capabilities).selectinload(ProductPlanCapability.capability))
+            .options(
+                selectinload(Subscription.product_plan).selectinload(ProductPlan.capabilities).selectinload(ProductPlanCapability.capability),
+                selectinload(Subscription.organization)
+            )
             .where(Subscription.id == id)
         )
         return result.scalars().first()
@@ -34,7 +40,10 @@ class SubscriptionRepository(BaseRepository[Subscription, SubscriptionCreate, Su
     ) -> List[Subscription]:
         result = await db.execute(
             select(Subscription)
-            .options(selectinload(Subscription.product_plan).selectinload(ProductPlan.capabilities).selectinload(ProductPlanCapability.capability))
+            .options(
+                selectinload(Subscription.product_plan).selectinload(ProductPlan.capabilities).selectinload(ProductPlanCapability.capability),
+                selectinload(Subscription.organization)
+            )
             .where(Subscription.organization_id == organization_id)
             .offset(skip)
             .limit(limit)
