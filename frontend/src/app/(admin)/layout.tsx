@@ -24,20 +24,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.push('/login');
   };
 
-  const navItems = [
-    { name: 'Dashboard', icon: LayoutDashboard, href: '/' },
-    { name: 'Requests', icon: Key, href: '/activation-requests' },
-    { name: 'Devices', icon: Monitor, href: '/devices' },
-    { name: 'Organizations', icon: Building, href: '/organizations' },
-    { name: 'Products', icon: Package, href: '/products' },
-    { name: 'Capabilities', icon: Zap, href: '/capabilities' },
-    { name: 'Plans', icon: Layers, href: '/plans' },
-    { name: 'Subscriptions', icon: CreditCard, href: '/subscriptions' },
-    { name: 'Deployments', icon: ShieldCheck, href: '/deployments' },
-    { name: 'Licenses', icon: Key, href: '/licenses' },
-    { name: 'Releases', icon: Package, href: '/releases' },
-    { name: 'Users', icon: Users, href: '/users' },
+  const role = user?.role || 'VIEWER';
+
+  const allNavItems = [
+    { name: 'Dashboard', icon: LayoutDashboard, href: '/', roles: ['OWNER', 'ADMIN', 'SUPPORT', 'VIEWER'] },
+    { name: 'Requests', icon: Key, href: '/activation-requests', roles: ['OWNER', 'ADMIN', 'SUPPORT'] },
+    { name: 'Devices', icon: Monitor, href: '/devices', roles: ['OWNER'] },
+    { name: 'Organizations', icon: Building, href: '/organizations', roles: ['OWNER', 'ADMIN'] },
+    { name: 'Products', icon: Package, href: '/products', roles: ['OWNER', 'ADMIN'] },
+    { name: 'Plans', icon: Layers, href: '/plans', roles: ['OWNER', 'ADMIN'] },
+    { name: 'Releases', icon: Package, href: '/releases', roles: ['OWNER', 'ADMIN', 'SUPPORT', 'VIEWER'] },
+    { name: 'Users', icon: Users, href: '/users', roles: ['OWNER'] },
   ];
+
+  const navItems = allNavItems.filter((item) => item.roles.includes(role));
 
   return (
     <div className="min-h-screen flex bg-background">

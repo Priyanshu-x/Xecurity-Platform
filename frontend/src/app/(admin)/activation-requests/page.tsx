@@ -8,9 +8,20 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { Laptop, Cpu, Hash, UploadCloud } from 'lucide-react';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
+import { useAuth } from '@/features/auth/authContext';
+import { useRouter } from 'next/navigation';
 
 export default function ActivationRequestsPage() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user && !['OWNER', 'ADMIN', 'SUPPORT'].includes(user.role)) {
+      router.push('/');
+    }
+  }, [user, router]);
+
   const { data: response, isLoading, isError } = useActivationRequests();
   const uploadMutation = useUploadRequest();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -48,7 +59,7 @@ export default function ActivationRequestsPage() {
       </div>
 
       <div className="grid gap-6">
-        {requests.map((request) => (
+        {requests.map((request: any) => (
           <Card key={request.id} className="hover:bg-accent/5 transition-colors">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">

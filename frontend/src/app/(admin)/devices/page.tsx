@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 
 import { DeviceStatus } from '@/features/devices/types';
 import { useDevices } from '@/features/devices/hooks/useDevices';
+import { useAuth } from '@/features/auth/authContext';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -40,6 +42,15 @@ function formatTimeAgo(dateString: string) {
 }
 
 export default function DevicesPage() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (user && user.role !== 'OWNER') {
+      router.push('/');
+    }
+  }, [user, router]);
+
   const { data: devices, isLoading, isError } = useDevices();
 
   const getStatusBadge = (status: DeviceStatus) => {
@@ -70,7 +81,7 @@ export default function DevicesPage() {
             <TableRow>
               <TableHead>Hostname / User</TableHead>
               <TableHead>OS</TableHead>
-              <TableHead>Build</TableHead>
+              <TableHead>App Version</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Last Seen</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -123,14 +134,17 @@ export default function DevicesPage() {
                   <div className="text-xs text-muted-foreground">{device.os_version}</div>
                 </TableCell>
                 <TableCell>
-                  <div className="font-mono text-sm">{device.current_build || '—'}</div>
+                  <div className="font-mono text-sm">{device.current_version || device.current_build || '—'}</div>
                 </TableCell>
                 <TableCell>
                   {getStatusBadge(device.status)}
                 </TableCell>
                 <TableCell>
-                  <div className="text-sm">
-                    {device.last_seen ? formatTimeAgo(device.last_seen) : 'Never'}
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${device.last_seen && new Date().getTime() - new Date(device.last_seen).getTime() < 5 * 60 * 1000 ? 'bg-green-500' : 'bg-muted-foreground/30'}`} />
+                    <div className="text-sm">
+                      {device.last_seen ? formatTimeAgo(device.last_seen) : 'Never'}
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell className="text-right">

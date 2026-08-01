@@ -16,7 +16,7 @@ async def create_organization(
     request: Request,
     org_in: OrganizationCreate,
     db: AsyncSession = Depends(get_db_session),
-    current_user: User = Depends(RoleChecker([UserRole.OWNER]))
+    current_user: User = Depends(RoleChecker([UserRole.OWNER, UserRole.ADMIN]))
 ):
     result = await organization_service.create_organization(db, org_in, current_user, request)
     return handle_result(result)
@@ -45,7 +45,7 @@ async def update_organization(
     org_id: str,
     org_in: OrganizationUpdate,
     db: AsyncSession = Depends(get_db_session),
-    current_user: User = Depends(RoleChecker([UserRole.OWNER]))
+    current_user: User = Depends(RoleChecker([UserRole.OWNER, UserRole.ADMIN]))
 ):
     result = await organization_service.update_organization(db, org_id, org_in, current_user, request)
     return handle_result(result)
@@ -55,7 +55,7 @@ async def delete_organization(
     request: Request,
     org_id: str,
     db: AsyncSession = Depends(get_db_session),
-    current_user: User = Depends(RoleChecker([UserRole.OWNER]))
+    current_user: User = Depends(RoleChecker([UserRole.OWNER, UserRole.ADMIN]))
 ):
     result = await organization_service.delete_organization(db, org_id, current_user, request)
     handle_result(result)

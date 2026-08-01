@@ -10,6 +10,7 @@ import { useCreateRelease } from '@/features/releases/hooks/useCreateRelease';
 import { useQuery } from '@tanstack/react-query';
 import { productService } from '@/features/products/productService';
 import { ReleaseForm } from '@/features/releases/components/ReleaseForm';
+import { useAuth } from '@/features/auth/authContext';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -41,6 +42,9 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
 export default function ReleasesPage() {
+  const { user } = useAuth();
+  const canManage = user && ['OWNER', 'ADMIN'].includes(user.role);
+
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const { data: releases, isLoading, isError } = useReleases();
   const { data: products } = useQuery({
@@ -88,27 +92,29 @@ export default function ReleasesPage() {
           </p>
         </div>
         
-        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Create Release
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create New Release</DialogTitle>
-              <DialogDescription>
-                Define the version and channel for this release. You can upload artifacts later.
-              </DialogDescription>
-            </DialogHeader>
-            <ReleaseForm 
-              products={products || []} 
-              onSubmit={handleCreateRelease} 
-              isSubmitting={createMutation.isPending} 
-            />
-          </DialogContent>
-        </Dialog>
+        {canManage && (
+          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Create Release
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create New Release</DialogTitle>
+                <DialogDescription>
+                  Define the version and channel for this release. You can upload artifacts later.
+                </DialogDescription>
+              </DialogHeader>
+              <ReleaseForm 
+                products={products || []} 
+                onSubmit={handleCreateRelease} 
+                isSubmitting={createMutation.isPending} 
+              />
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       <div className="border border-border/50 rounded-lg bg-card/50 backdrop-blur-sm overflow-hidden">
@@ -151,7 +157,7 @@ export default function ReleasesPage() {
                   <div className="flex flex-col items-center justify-center text-muted-foreground">
                     <Package className="w-12 h-12 mb-4 opacity-20" />
                     <p className="text-lg font-medium text-foreground">No releases found</p>
-                    <p className="text-sm">Start by creating a new release.</p>
+                    <p className="text-sm">{canManage ? "Start by creating a new release." : "No releases have been published yet."}</p>
                   </div>
                 </TableCell>
               </TableRow>

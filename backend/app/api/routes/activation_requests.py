@@ -19,7 +19,7 @@ from app.schemas.activation_request import (
 from app.schemas.base import PaginatedResponse
 from app.services.activation_request_service import activation_request_service
 
-admin_checker = RoleChecker([UserRole.ADMIN, UserRole.OWNER])
+support_checker = RoleChecker([UserRole.SUPPORT, UserRole.ADMIN, UserRole.OWNER])
 
 router = APIRouter(prefix="/activation-requests", tags=["Activation Requests"])
 
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/activation-requests", tags=["Activation Requests"])
 async def upload_request(
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db_session),
-    current_user: User = Depends(admin_checker)
+    current_user: User = Depends(support_checker)
 ):
     return await activation_request_service.create_from_upload(db, file)
 
@@ -37,7 +37,7 @@ async def list_requests(
     limit: int = 100,
     device_id: str | None = None,
     db: AsyncSession = Depends(get_db_session),
-    current_user: User = Depends(admin_checker)
+    current_user: User = Depends(support_checker)
 ):
     requests, total = await activation_request_service.get_all(db, skip=skip, limit=limit, device_id=device_id)
     return PaginatedResponse(items=requests, total=total, skip=skip, limit=limit)
@@ -46,7 +46,7 @@ async def list_requests(
 async def get_request(
     id: str,
     db: AsyncSession = Depends(get_db_session),
-    current_user: User = Depends(admin_checker)
+    current_user: User = Depends(support_checker)
 ):
     request = await activation_request_service.get(db, id)
     if not request:
@@ -57,7 +57,7 @@ async def get_request(
 async def review_request(
     id: str,
     db: AsyncSession = Depends(get_db_session),
-    current_user: User = Depends(admin_checker)
+    current_user: User = Depends(support_checker)
 ):
     return await activation_request_service.review(db, id, current_user.id)
 
@@ -66,7 +66,7 @@ async def reject_request(
     id: str,
     payload: ActivationRequestReject,
     db: AsyncSession = Depends(get_db_session),
-    current_user: User = Depends(admin_checker)
+    current_user: User = Depends(support_checker)
 ):
     return await activation_request_service.reject(db, id, payload.reason, current_user.id, payload.notes)
 
@@ -75,7 +75,7 @@ async def generate_license(
     id: str,
     config: LicenseGenerationConfig,
     db: AsyncSession = Depends(get_db_session),
-    current_user: User = Depends(admin_checker)
+    current_user: User = Depends(support_checker)
 ):
     return await activation_request_service.generate_license(db, id, config.model_dump(), current_user.id)
 
@@ -84,7 +84,7 @@ async def generate_license(
 async def download_license(
     id: str,
     db: AsyncSession = Depends(get_db_session),
-    current_user: User = Depends(admin_checker)
+    current_user: User = Depends(support_checker)
 ):
     request = await activation_request_service.get(db, id)
     if not request or not request.generated_license_id:

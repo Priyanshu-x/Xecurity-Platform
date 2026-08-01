@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 import { organizationService } from '@/features/organizations/organizationService';
 import { Organization, OrganizationCreate, OrganizationUpdate } from '@/features/organizations/types';
 import { OrganizationForm } from '@/features/organizations/components/OrganizationForm';
+import { useAuth } from '@/features/auth/authContext';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -38,6 +40,15 @@ import {
 import { Badge } from '@/components/ui/badge';
 
 export default function OrganizationsPage() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (user && !['OWNER', 'ADMIN'].includes(user.role)) {
+      router.push('/');
+    }
+  }, [user, router]);
+
   const queryClient = useQueryClient();
   
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -96,10 +107,10 @@ export default function OrganizationsPage() {
         </div>
         
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger render={<Button />}>
+          <DialogTrigger asChild><Button>
             <Plus className="w-4 h-4 mr-2" />
             Add Organization
-          </DialogTrigger>
+          </Button></DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Create New Organization</DialogTitle>

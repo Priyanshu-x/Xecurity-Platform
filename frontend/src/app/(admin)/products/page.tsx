@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 import { productService } from '@/features/products/productService';
 import { Product, ProductCreate, ProductUpdate, ProductStatus } from '@/features/products/types';
 import { ProductForm, ProductFormValues } from '@/features/products/components/ProductForm';
+import { useAuth } from '@/features/auth/authContext';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -38,6 +40,15 @@ import {
 } from '@/components/ui/dialog';
 
 export default function ProductsPage() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (user && !['OWNER', 'ADMIN'].includes(user.role)) {
+      router.push('/');
+    }
+  }, [user, router]);
+
   const queryClient = useQueryClient();
   
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -109,10 +120,10 @@ export default function ProductsPage() {
         </div>
         
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger render={<Button />}>
+          <DialogTrigger asChild><Button>
             <Plus className="w-4 h-4 mr-2" />
             Add Product
-          </DialogTrigger>
+          </Button></DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Create New Product</DialogTitle>

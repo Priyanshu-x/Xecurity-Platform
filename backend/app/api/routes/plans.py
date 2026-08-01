@@ -14,7 +14,7 @@ router = APIRouter()
 @router.get("/", response_model=List[ProductPlanResponse])
 async def list_plans(
     db: AsyncSession = Depends(get_db_session),
-    current_user: User = Depends(require_role([UserRole.OWNER, UserRole.ADMIN, UserRole.SUPPORT]))
+    current_user: User = Depends(require_role([UserRole.OWNER, UserRole.ADMIN]))
 ):
     result = await plan_service.get_all_plans(db)
     return handle_result(result)
@@ -23,7 +23,7 @@ async def list_plans(
 async def get_plan(
     plan_id: str,
     db: AsyncSession = Depends(get_db_session),
-    current_user: User = Depends(require_role([UserRole.OWNER, UserRole.ADMIN, UserRole.SUPPORT]))
+    current_user: User = Depends(require_role([UserRole.OWNER, UserRole.ADMIN]))
 ):
     result = await plan_service.get_plan(db, plan_id)
     return handle_result(result)
