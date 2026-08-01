@@ -27,7 +27,7 @@ export function LicenseGenerationWizard({ requestId, onClose }: { requestId: str
     await generateMutation.mutateAsync({
       organization_id: orgId,
       product_id: productId,
-      plan_id: planId || undefined,
+      plan_id: planId || "",
       license_type: licenseType,
       validity_months: validity
     });

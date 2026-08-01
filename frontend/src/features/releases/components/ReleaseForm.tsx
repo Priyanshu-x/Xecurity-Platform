@@ -43,7 +43,7 @@ interface ReleaseFormProps {
 
 export function ReleaseForm({ products, onSubmit, isSubmitting }: ReleaseFormProps) {
   const form = useForm<ReleaseFormValues>({
-    resolver: zodResolver(releaseSchema),
+    resolver: zodResolver(releaseSchema) as any,
     defaultValues: {
       product_id: '',
       version: '',
@@ -66,12 +66,12 @@ export function ReleaseForm({ products, onSubmit, isSubmitting }: ReleaseFormPro
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
-          control={form.control}
+          control={form.control as any}
           name="product_id"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Product</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a product" />
@@ -92,7 +92,7 @@ export function ReleaseForm({ products, onSubmit, isSubmitting }: ReleaseFormPro
 
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="version"
             render={({ field }) => (
               <FormItem>
@@ -106,7 +106,7 @@ export function ReleaseForm({ products, onSubmit, isSubmitting }: ReleaseFormPro
           />
 
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="build_number"
             render={({ field }) => (
               <FormItem>
@@ -121,12 +121,12 @@ export function ReleaseForm({ products, onSubmit, isSubmitting }: ReleaseFormPro
         </div>
 
         <FormField
-          control={form.control}
+          control={form.control as any}
           name="channel"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Channel</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select channel" />
@@ -146,7 +146,7 @@ export function ReleaseForm({ products, onSubmit, isSubmitting }: ReleaseFormPro
         />
 
         <FormField
-          control={form.control}
+          control={form.control as any}
           name="mandatory"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">

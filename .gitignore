@@ -44,3 +44,10 @@ htmlcov/
 # Keys
 *.pem
 *.key
+
+# Database
+*.db
+*.sqlite
+
+# Local documentation
+local.readme.md

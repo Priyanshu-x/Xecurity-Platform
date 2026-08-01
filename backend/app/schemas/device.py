@@ -115,6 +115,15 @@ class DeviceHeartbeatRequest(BaseModel):
     uptime: Optional[int] = None
     os_version: Optional[str] = None
 
+class DeviceHeartbeatPayload(BaseModel):
+    machine_fingerprint: str
+    hostname: Optional[str] = None
+    username: Optional[str] = None
+    os: Optional[str] = None
+    os_version: Optional[str] = None
+    app_version: Optional[str] = None
+    license_state: Optional[str] = None
+
 class DeviceHeartbeatResponse(BaseModel):
     success: bool
     status: DeviceStatus

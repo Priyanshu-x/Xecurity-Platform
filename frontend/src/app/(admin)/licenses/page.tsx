@@ -85,10 +85,10 @@ export default function LicensesPage() {
         </div>
         
         <Dialog open={isIssueOpen} onOpenChange={setIsIssueOpen}>
-          <DialogTrigger render={<Button />}>
+          <DialogTrigger asChild><Button>
             <Plus className="w-4 h-4 mr-2" />
             Issue License
-          </DialogTrigger>
+          </Button></DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Issue New License</DialogTitle>

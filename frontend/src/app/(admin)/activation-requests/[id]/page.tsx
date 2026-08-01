@@ -37,7 +37,13 @@ export default function RequestDetailsPage() {
       const url = window.URL.createObjectURL(response.data);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${request.request_number.replace('REQ', 'LIC')}.wfalic`;
+      
+      let filename = `${request.request_number.replace('REQ', 'LIC')}.wfalic`;
+      if (request.original_filename) {
+        filename = request.original_filename.replace('.wfareq', '.wfalic').replace('-Request-', '-License-');
+      }
+      a.download = filename;
+      
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);

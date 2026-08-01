@@ -5,7 +5,7 @@ import { queryKeys } from '@/lib/api/queryKeys';
 export function useDevice(id: string) {
   return useQuery({
     queryKey: queryKeys.devices.detail(id),
-    queryFn: () => deviceService.get(id),
+    queryFn: () => deviceService.getOne(id),
     enabled: !!id,
   });
 }

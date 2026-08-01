@@ -96,10 +96,10 @@ export default function CapabilitiesPage() {
         </div>
         
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger render={<Button />}>
+          <DialogTrigger asChild><Button>
             <Plus className="w-4 h-4 mr-2" />
             Add Capability
-          </DialogTrigger>
+          </Button></DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Create New Capability</DialogTitle>

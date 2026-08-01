@@ -34,8 +34,11 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         result = await db.execute(stmt)
         return list(result.scalars().all())
 
-    async def create(self, db: AsyncSession, *, obj_in: CreateSchemaType, **kwargs) -> ModelType:
-        obj_in_data = obj_in.model_dump()
+    async def create(self, db: AsyncSession, *, obj_in: Union[CreateSchemaType, Dict[str, Any]], **kwargs) -> ModelType:
+        if isinstance(obj_in, dict):
+            obj_in_data = obj_in.copy()
+        else:
+            obj_in_data = obj_in.model_dump()
         obj_in_data.update(kwargs)
         db_obj = self.model(**obj_in_data)
         db.add(db_obj)
