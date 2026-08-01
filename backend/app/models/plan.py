@@ -18,6 +18,7 @@ class ProductPlan(BaseModelMixin, Base):
     max_devices = Column(Integer, nullable=True) # Null means unlimited
     max_users = Column(Integer, nullable=True) # Null means unlimited
     trial_days = Column(Integer, nullable=True, default=0)
+    duration_months = Column(Integer, nullable=True, default=12) # Duration in months (null for custom)
 
     # Relationships
     product = relationship("Product", back_populates="plans")

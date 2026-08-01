@@ -29,9 +29,7 @@ const planSchema = z.object({
   product_id: z.string().min(1, 'Product is required'),
   tier: z.nativeEnum(PlanTier),
   status: z.nativeEnum(PlanStatus),
-  max_devices: z.number().nullable().optional(),
-  max_users: z.number().nullable().optional(),
-  trial_days: z.number().min(0).default(0),
+  duration_months: z.number().nullable().optional(),
 });
 
 export type PlanFormValues = z.infer<typeof planSchema>;
@@ -59,9 +57,7 @@ export function PlanForm({ initialData, onSubmit, isSubmitting = false }: PlanFo
       product_id: initialData?.product_id || '',
       tier: initialData?.tier || PlanTier.COMMUNITY,
       status: initialData?.status || PlanStatus.ACTIVE,
-      max_devices: initialData?.max_devices ?? null,
-      max_users: initialData?.max_users ?? null,
-      trial_days: initialData?.trial_days ?? 0,
+      duration_months: initialData?.duration_months ?? 12,
     },
   });
 
@@ -125,14 +121,14 @@ export function PlanForm({ initialData, onSubmit, isSubmitting = false }: PlanFo
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 relative z-10">
           <FormField
             control={form.control as any}
             name="product_id"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Product</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingProducts}>
+                <Select onValueChange={field.onChange} value={field.value} disabled={isLoadingProducts}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder={isLoadingProducts ? "Loading..." : "Select a product"} />
@@ -156,7 +152,7 @@ export function PlanForm({ initialData, onSubmit, isSubmitting = false }: PlanFo
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Tier</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a tier" />
@@ -190,86 +186,60 @@ export function PlanForm({ initialData, onSubmit, isSubmitting = false }: PlanFo
           )}
         />
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control as any}
-            name="max_users"
+            name="duration_months"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Max Users</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="Unlimited" 
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
-                  />
-                </FormControl>
+                <FormLabel>Validity Duration</FormLabel>
+                <Select
+                  onValueChange={(val) => field.onChange(val === 'custom' ? null : parseInt(val))}
+                  value={field.value === null || field.value === undefined ? 'custom' : field.value.toString()}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select duration" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="1">1 Month</SelectItem>
+                    <SelectItem value="3">3 Months</SelectItem>
+                    <SelectItem value="6">6 Months</SelectItem>
+                    <SelectItem value="12">12 Months (1 Year)</SelectItem>
+                    <SelectItem value="24">24 Months (2 Years)</SelectItem>
+                    <SelectItem value="custom">Custom / Flexible</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormField
             control={form.control as any}
-            name="max_devices"
+            name="status"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Max Devices</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="Unlimited" 
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control as any}
-            name="trial_days"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Trial Days</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    {...field}
-                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                  />
-                </FormControl>
+                <FormLabel>Status</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a status" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {Object.values(PlanStatus).map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
-
-        <FormField
-          control={form.control as any}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Status</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a status" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {Object.values(PlanStatus).map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <div className="flex justify-end pt-4">
           <Button type="submit" disabled={isSubmitting}>

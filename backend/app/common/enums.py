@@ -16,6 +16,7 @@ class PlanTier(str, Enum):
     PROFESSIONAL = "PROFESSIONAL"
     ENTERPRISE = "ENTERPRISE"
     GOVERNMENT = "GOVERNMENT"
+    CUSTOM = "CUSTOM"
 
 class PlanStatus(str, Enum):
     ACTIVE = "ACTIVE"

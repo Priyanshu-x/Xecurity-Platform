@@ -176,6 +176,7 @@ class PlanService:
             "max_devices": plan.max_devices,
             "max_users": plan.max_users,
             "trial_days": plan.trial_days,
+            "duration_months": getattr(plan, "duration_months", 12),
             "created_at": plan.created_at,
             "updated_at": plan.updated_at,
             "capabilities": capabilities

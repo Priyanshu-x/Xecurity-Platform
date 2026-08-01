@@ -5,6 +5,7 @@ export enum PlanTier {
   PROFESSIONAL = 'PROFESSIONAL',
   ENTERPRISE = 'ENTERPRISE',
   GOVERNMENT = 'GOVERNMENT',
+  CUSTOM = 'CUSTOM',
 }
 
 export enum PlanStatus {
@@ -22,7 +23,8 @@ export interface Plan {
   product_id: string;
   max_devices?: number | null;
   max_users?: number | null;
-  trial_days: number;
+  trial_days?: number;
+  duration_months?: number | null;
   created_at: string;
   updated_at: string;
   capabilities?: Capability[];
@@ -38,6 +40,7 @@ export interface PlanCreate {
   max_devices?: number | null;
   max_users?: number | null;
   trial_days?: number;
+  duration_months?: number | null;
 }
 
 export type PlanUpdate = Partial<PlanCreate>;

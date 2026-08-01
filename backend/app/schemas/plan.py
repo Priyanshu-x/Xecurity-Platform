@@ -13,6 +13,7 @@ class ProductPlanBase(BaseModel):
     max_devices: Optional[int] = Field(default=None, description="Null means unlimited")
     max_users: Optional[int] = Field(default=None, description="Null means unlimited")
     trial_days: Optional[int] = Field(default=0, ge=0)
+    duration_months: Optional[int] = Field(default=12, description="Duration in months, e.g. 1, 3, 6, 12, 24")
 
 class ProductPlanCreate(ProductPlanBase):
     slug: str = Field(..., max_length=255)
@@ -26,6 +27,7 @@ class ProductPlanUpdate(BaseModel):
     max_devices: Optional[int] = None
     max_users: Optional[int] = None
     trial_days: Optional[int] = Field(None, ge=0)
+    duration_months: Optional[int] = None
 
 class ProductPlanResponse(ProductPlanBase):
     id: str

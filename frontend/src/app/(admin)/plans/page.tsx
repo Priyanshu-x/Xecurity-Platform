@@ -9,6 +9,8 @@ import { planService } from '@/features/plans/planService';
 import { Plan, PlanCreate, PlanUpdate, PlanTier, PlanStatus } from '@/features/plans/types';
 import { PlanForm } from '@/features/plans/components/PlanForm';
 import { PlanCapabilities } from '@/features/plans/components/PlanCapabilities';
+import { useAuth } from '@/features/auth/authContext';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -39,6 +41,15 @@ import {
 } from '@/components/ui/dialog';
 
 export default function PlansPage() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (user && !['OWNER', 'ADMIN'].includes(user.role)) {
+      router.push('/');
+    }
+  }, [user, router]);
+
   const queryClient = useQueryClient();
   
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -93,8 +104,17 @@ export default function PlansPage() {
       case PlanTier.PROFESSIONAL: return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
       case PlanTier.COMMUNITY: return 'bg-green-500/10 text-green-500 border-green-500/20';
       case PlanTier.GOVERNMENT: return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
+      case PlanTier.CUSTOM: return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
       default: return 'bg-gray-500/10 text-gray-500';
     }
+  };
+
+  const formatDuration = (months?: number | null) => {
+    if (months === null || months === undefined) return 'Custom Duration';
+    if (months === 1) return '1 Month';
+    if (months === 12) return '12 Months (1 Year)';
+    if (months === 24) return '24 Months (2 Years)';
+    return `${months} Months`;
   };
 
   return (
@@ -108,10 +128,10 @@ export default function PlansPage() {
         </div>
         
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger render={<Button />}>
+          <DialogTrigger asChild><Button>
             <Plus className="w-4 h-4 mr-2" />
             Add Plan
-          </DialogTrigger>
+          </Button></DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Create New Plan</DialogTitle>
@@ -133,7 +153,7 @@ export default function PlansPage() {
             <TableRow>
               <TableHead>Plan</TableHead>
               <TableHead>Tier</TableHead>
-              <TableHead>Limits</TableHead>
+              <TableHead>Validity / Duration</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -184,9 +204,8 @@ export default function PlansPage() {
                     {plan.tier}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground space-y-1">
-                  <div>Users: {plan.max_users === null ? 'Unlimited' : plan.max_users}</div>
-                  <div>Devices: {plan.max_devices === null ? 'Unlimited' : plan.max_devices}</div>
+                <TableCell className="text-sm text-muted-foreground font-medium">
+                  {formatDuration(plan.duration_months)}
                 </TableCell>
                 <TableCell>
                   {plan.status === PlanStatus.ACTIVE ? (
@@ -207,9 +226,6 @@ export default function PlansPage() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => setCapabilitiesPlan(plan)}>
-                        <CheckSquare className="w-4 h-4 mr-2" /> Assign Capabilities
-                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => setEditingPlan(plan)}>
                         <Pencil className="w-4 h-4 mr-2" /> Edit
                       </DropdownMenuItem>
