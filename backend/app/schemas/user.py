@@ -18,3 +18,10 @@ class UserResponse(UserBase):
     created_at: datetime
     
     model_config = ConfigDict(from_attributes=True)
+
+class UserUpdate(BaseModel):
+    is_active: Optional[bool] = None
+    role: Optional[UserRole] = None
+    organization_id: Optional[str] = None
+    password: Optional[str] = None
+
