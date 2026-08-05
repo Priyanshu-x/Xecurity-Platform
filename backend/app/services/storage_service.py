@@ -44,5 +44,7 @@ class LocalDiskStorageService(StorageService):
             return True
         return False
 
-# Export a default instance
-storage_service = LocalDiskStorageService()
+from app.core.config import settings
+
+# Export a default instance using the configured storage path
+storage_service = LocalDiskStorageService(base_dir=settings.STORAGE_PATH)

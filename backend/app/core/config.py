@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     LICENSE_PRIVATE_KEY: str = ""
+    CORS_ORIGINS: str = "*"
+    STORAGE_PATH: str = "uploads"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

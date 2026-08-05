@@ -3,7 +3,7 @@ name = "backend"
 version = "0.1.0"
 description = "Xecurity Platform Backend API"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.100.0",
     "uvicorn[standard]>=0.22.0",

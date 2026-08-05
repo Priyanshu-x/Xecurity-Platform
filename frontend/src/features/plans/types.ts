@@ -18,7 +18,7 @@ export interface Plan {
   name: string;
   slug: string;
   description?: string;
-  tier: PlanTier;
+  tier?: PlanTier;
   status: PlanStatus;
   product_id: string;
   max_devices?: number | null;
@@ -34,7 +34,7 @@ export interface PlanCreate {
   name: string;
   slug: string;
   description?: string;
-  tier: PlanTier;
+  tier?: PlanTier;
   status: PlanStatus;
   product_id: string;
   max_devices?: number | null;

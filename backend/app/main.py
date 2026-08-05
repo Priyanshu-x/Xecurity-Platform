@@ -6,6 +6,7 @@ from app.api.main import api_router
 from app.api.routes import health
 from app.services.audit_service import setup_audit_logging
 
+import os
 from contextlib import asynccontextmanager
 from sqlalchemy import text
 from sqlalchemy.future import select
@@ -28,6 +29,9 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             print(f"[INFO] Schema patch notice: {e}")
     
+    # Ensure storage directory exists
+    os.makedirs(settings.STORAGE_PATH, exist_ok=True)
+
     # Ensure default Platform OWNER exists
     async with AsyncSessionLocal() as db:
         result = await db.execute(select(User).where(User.role == UserRole.OWNER))
@@ -50,10 +54,14 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Parse CORS origins from settings
+_origins = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]
+_allow_credentials = _origins != ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=_origins,
+    allow_credentials=_allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )

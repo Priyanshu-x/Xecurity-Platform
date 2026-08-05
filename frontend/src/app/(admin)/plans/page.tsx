@@ -151,20 +151,20 @@ export default function PlansPage() {
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead>Plan</TableHead>
-              <TableHead>Tier</TableHead>
-              <TableHead>Validity / Duration</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="w-[180px]">Plan</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead className="w-[180px] whitespace-nowrap">Duration</TableHead>
+              <TableHead className="w-[120px] whitespace-nowrap">Status</TableHead>
+              <TableHead className="w-[80px] text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading && (
               Array.from({ length: 3 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-[100px] rounded-full" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-[140px]" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-[240px]" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-[120px]" /></TableCell>
                   <TableCell><Skeleton className="h-6 w-[80px] rounded-full" /></TableCell>
                   <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto rounded-md" /></TableCell>
                 </TableRow>
@@ -179,35 +179,30 @@ export default function PlansPage() {
               </TableRow>
             )}
 
-            {!isLoading && !isError && plans?.length === 0 && (
+            {!isLoading && !isError && (plans?.filter(p => p.status === PlanStatus.ACTIVE) || []).length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} className="h-48 text-center">
                   <div className="flex flex-col items-center justify-center text-muted-foreground">
                     <Layers className="w-12 h-12 mb-4 opacity-20" />
-                    <p className="text-lg font-medium text-foreground">No plans found</p>
+                    <p className="text-lg font-medium text-foreground">No active plans found</p>
                     <p className="text-sm">Get started by creating your first subscription plan.</p>
                   </div>
                 </TableCell>
               </TableRow>
             )}
 
-            {!isLoading && !isError && plans?.map((plan) => (
+            {!isLoading && !isError && (plans?.filter(p => p.status === PlanStatus.ACTIVE) || []).map((plan) => (
               <TableRow key={plan.id}>
-                <TableCell className="font-medium">
+                <TableCell className="font-semibold text-foreground whitespace-nowrap">
                   {plan.name}
-                  {plan.description && (
-                    <p className="text-xs text-muted-foreground mt-1 truncate max-w-xs">{plan.description}</p>
-                  )}
                 </TableCell>
-                <TableCell>
-                  <Badge variant="outline" className={getTierColor(plan.tier)}>
-                    {plan.tier}
-                  </Badge>
+                <TableCell className="text-sm text-muted-foreground">
+                  {plan.description || 'Full WFA suite unlocked'}
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground font-medium">
+                <TableCell className="text-sm font-medium text-foreground whitespace-nowrap">
                   {formatDuration(plan.duration_months)}
                 </TableCell>
-                <TableCell>
+                <TableCell className="whitespace-nowrap">
                   {plan.status === PlanStatus.ACTIVE ? (
                     <Badge variant="outline" className="bg-green-500/10 text-green-500 hover:bg-green-500/20">
                       Active

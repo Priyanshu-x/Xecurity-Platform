@@ -8,7 +8,7 @@ from app.schemas.capability import CapabilityResponse
 class ProductPlanBase(BaseModel):
     name: str = Field(..., max_length=255)
     description: Optional[str] = None
-    tier: PlanTier = Field(default=PlanTier.COMMUNITY)
+    tier: Optional[PlanTier] = Field(default=PlanTier.COMMUNITY)
     status: PlanStatus = Field(default=PlanStatus.ACTIVE)
     max_devices: Optional[int] = Field(default=None, description="Null means unlimited")
     max_users: Optional[int] = Field(default=None, description="Null means unlimited")

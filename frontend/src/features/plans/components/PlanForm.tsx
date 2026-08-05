@@ -27,7 +27,6 @@ const planSchema = z.object({
   slug: z.string().min(2, 'Slug is required').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
   description: z.string().optional(),
   product_id: z.string().min(1, 'Product is required'),
-  tier: z.nativeEnum(PlanTier),
   status: z.nativeEnum(PlanStatus),
   duration_months: z.number().nullable().optional(),
 });
@@ -55,7 +54,6 @@ export function PlanForm({ initialData, onSubmit, isSubmitting = false }: PlanFo
       slug: initialData?.slug || '',
       description: initialData?.description || '',
       product_id: initialData?.product_id || '',
-      tier: initialData?.tier || PlanTier.COMMUNITY,
       status: initialData?.status || PlanStatus.ACTIVE,
       duration_months: initialData?.duration_months ?? 12,
     },
@@ -93,7 +91,7 @@ export function PlanForm({ initialData, onSubmit, isSubmitting = false }: PlanFo
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Pro Plan" {...field} />
+                  <Input placeholder="Annual Plan" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -107,7 +105,7 @@ export function PlanForm({ initialData, onSubmit, isSubmitting = false }: PlanFo
                 <FormLabel>Slug</FormLabel>
                 <FormControl>
                   <Input 
-                    placeholder="pro-plan" 
+                    placeholder="annual-plan" 
                     {...field} 
                     onChange={(e) => {
                       setIsSlugManual(true);
@@ -121,7 +119,7 @@ export function PlanForm({ initialData, onSubmit, isSubmitting = false }: PlanFo
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 relative z-10">
+        <div className="relative z-10">
           <FormField
             control={form.control as any}
             name="product_id"
@@ -138,30 +136,6 @@ export function PlanForm({ initialData, onSubmit, isSubmitting = false }: PlanFo
                     {products?.map((product) => (
                       <SelectItem key={product.id} value={product.id}>
                         {product.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control as any}
-            name="tier"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Tier</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a tier" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {Object.values(PlanTier).map((tier) => (
-                      <SelectItem key={tier} value={tier}>
-                        {tier}
                       </SelectItem>
                     ))}
                   </SelectContent>
