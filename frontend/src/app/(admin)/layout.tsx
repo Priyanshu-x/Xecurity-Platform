@@ -29,7 +29,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const allNavItems = [
     { name: 'Dashboard', icon: LayoutDashboard, href: '/', roles: ['OWNER', 'ADMIN', 'SUPPORT', 'VIEWER'] },
     { name: 'Requests', icon: Key, href: '/activation-requests', roles: ['OWNER', 'ADMIN', 'SUPPORT'] },
-    { name: 'Licenses', icon: Key, href: '/licenses', roles: ['OWNER', 'ADMIN', 'SUPPORT'] },
     { name: 'Devices', icon: Monitor, href: '/devices', roles: ['OWNER', 'ADMIN', 'SUPPORT'] },
     { name: 'Organizations', icon: Building, href: '/organizations', roles: ['OWNER', 'ADMIN'] },
     { name: 'Products', icon: Package, href: '/products', roles: ['OWNER', 'ADMIN'] },
