@@ -17,4 +17,7 @@ export const queryKeys = {
   releases: createEntityKeys('releases'),
   devices: createEntityKeys('devices'),
   activationRequests: createEntityKeys('activation-requests'),
+  dashboard: {
+    stats: () => ['dashboard', 'stats'] as const,
+  },
 };

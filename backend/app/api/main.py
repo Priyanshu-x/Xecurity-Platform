@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.routes import health, auth, products, releases, capabilities, plans, subscriptions, licenses, deployments, organizations, devices, client_api, activation_requests, users
+from app.api.routes import health, auth, products, releases, capabilities, plans, subscriptions, licenses, deployments, organizations, devices, client_api, activation_requests, users, dashboard
 
 api_router = APIRouter()
 api_router.include_router(health.router, tags=["Health"])
@@ -16,3 +16,4 @@ api_router.include_router(devices.router)
 api_router.include_router(activation_requests.router)
 api_router.include_router(client_api.router)
 api_router.include_router(users.router)
+api_router.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
