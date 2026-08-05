@@ -24,15 +24,18 @@ export function LicenseGenerationWizard({ requestId, onClose }: { requestId: str
   const handleGenerate = async () => {
     if (!orgId || !productId) return;
     
-    await generateMutation.mutateAsync({
-      organization_id: orgId,
-      product_id: productId,
-      plan_id: planId || "",
-      license_type: licenseType,
-      validity_months: validity
-    });
-    
-    onClose();
+    try {
+      await generateMutation.mutateAsync({
+        organization_id: orgId,
+        product_id: productId,
+        plan_id: planId || undefined,
+        license_type: licenseType,
+        validity_months: validity
+      });
+      onClose();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -81,7 +84,12 @@ export function LicenseGenerationWizard({ requestId, onClose }: { requestId: str
               <label className="text-sm font-medium">Validity (Months)</label>
               <input type="number" className="w-full p-2 border rounded-md bg-background text-foreground" value={validity || ''} onChange={e => setValidity(Number(e.target.value) || undefined)} />
             </div>
-            <div className="flex justify-end space-x-2 mt-6">
+            <div className="flex justify-end items-center space-x-2 mt-6">
+              {generateMutation.isError && (
+                <div className="text-destructive text-sm mr-auto font-medium">
+                  Failed to generate license: {(generateMutation.error as any)?.response?.data?.detail || generateMutation.error?.message}
+                </div>
+              )}
               <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
               <Button onClick={handleGenerate} disabled={generateMutation.isPending}>
                 {generateMutation.isPending ? "Generating..." : "Generate License"}
