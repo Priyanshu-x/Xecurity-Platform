@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
     # Ensure default Platform OWNER exists
     async with AsyncSessionLocal() as db:
         result = await db.execute(select(User).where(User.role == UserRole.OWNER))
-        owner = result.scalar_one_or_none()
+        owner = result.scalars().first()
         if not owner:
             print("[INFO] Creating default Platform OWNER (admin@xecurity.com)...")
             db.add(User(
