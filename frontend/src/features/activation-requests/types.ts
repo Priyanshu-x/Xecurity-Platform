@@ -70,7 +70,7 @@ export interface ActivationRequest {
 export interface LicenseGenerationConfig {
   organization_id: string;
   product_id: string;
-  plan_id: string;
+  plan_id?: string;
   license_type: string;
   validity_months?: number;
   capabilities_override?: Record<string, any>;
