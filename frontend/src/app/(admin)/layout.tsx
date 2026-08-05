@@ -32,7 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Devices', icon: Monitor, href: '/devices', roles: ['OWNER', 'ADMIN', 'SUPPORT'] },
     { name: 'Organizations', icon: Building, href: '/organizations', roles: ['OWNER', 'ADMIN'] },
     { name: 'Products', icon: Package, href: '/products', roles: ['OWNER', 'ADMIN'] },
-    { name: 'Plans', icon: Layers, href: '/plans', roles: ['OWNER', 'ADMIN'] },
+    { name: 'Plans', icon: Layers, href: '/plans', roles: ['OWNER', 'ADMIN', 'VIEWER'] },
     { name: 'Releases', icon: Package, href: '/releases', roles: ['OWNER', 'ADMIN', 'SUPPORT', 'VIEWER'] },
     { name: 'Users', icon: Users, href: '/users', roles: ['OWNER'] },
   ];

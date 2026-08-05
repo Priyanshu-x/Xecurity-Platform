@@ -45,7 +45,7 @@ export default function PlansPage() {
   const router = useRouter();
 
   React.useEffect(() => {
-    if (user && !['OWNER', 'ADMIN'].includes(user.role)) {
+    if (user && !['OWNER', 'ADMIN', 'VIEWER'].includes(user.role)) {
       router.push('/');
     }
   }, [user, router]);
@@ -127,24 +127,26 @@ export default function PlansPage() {
           </p>
         </div>
         
-        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger asChild><Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Add Plan
-          </Button></DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Create New Plan</DialogTitle>
-              <DialogDescription>
-                Define a new subscription plan for a product.
-              </DialogDescription>
-            </DialogHeader>
-            <PlanForm 
-              onSubmit={(data) => createMutation.mutate(data as PlanCreate)} 
-              isSubmitting={createMutation.isPending}
-            />
-          </DialogContent>
-        </Dialog>
+        {user && ['OWNER', 'ADMIN'].includes(user.role) && (
+          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+            <DialogTrigger asChild><Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Plan
+            </Button></DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Create New Plan</DialogTitle>
+                <DialogDescription>
+                  Define a new subscription plan for a product.
+                </DialogDescription>
+              </DialogHeader>
+              <PlanForm 
+                onSubmit={(data) => createMutation.mutate(data as PlanCreate)} 
+                isSubmitting={createMutation.isPending}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       <div className="border border-border/50 rounded-lg bg-card/50 backdrop-blur-sm overflow-hidden">
@@ -155,7 +157,9 @@ export default function PlansPage() {
               <TableHead>Description</TableHead>
               <TableHead className="w-[180px] whitespace-nowrap">Duration</TableHead>
               <TableHead className="w-[120px] whitespace-nowrap">Status</TableHead>
-              <TableHead className="w-[80px] text-right">Actions</TableHead>
+              {user && ['OWNER', 'ADMIN'].includes(user.role) && (
+                <TableHead className="w-[80px] text-right">Actions</TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -166,7 +170,9 @@ export default function PlansPage() {
                   <TableCell><Skeleton className="h-4 w-[240px]" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-[120px]" /></TableCell>
                   <TableCell><Skeleton className="h-6 w-[80px] rounded-full" /></TableCell>
-                  <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto rounded-md" /></TableCell>
+                  {user && ['OWNER', 'ADMIN'].includes(user.role) && (
+                    <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto rounded-md" /></TableCell>
+                  )}
                 </TableRow>
               ))
             )}
@@ -213,28 +219,32 @@ export default function PlansPage() {
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger render={<Button variant="ghost" className="h-8 w-8 p-0" />}>
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal className="h-4 w-4" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => setEditingPlan(plan)}>
-                        <Pencil className="w-4 h-4 mr-2" /> Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem 
-                        onClick={() => setArchivingPlan(plan)}
-                        disabled={plan.status === PlanStatus.DEPRECATED}
-                        className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
-                      >
-                        <Archive className="w-4 h-4 mr-2" /> Archive
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+                {user && ['OWNER', 'ADMIN'].includes(user.role) && (
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => setEditingPlan(plan)}>
+                          <Pencil className="w-4 h-4 mr-2" /> Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          onClick={() => setArchivingPlan(plan)}
+                          disabled={plan.status === PlanStatus.DEPRECATED}
+                          className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
+                        >
+                          <Archive className="w-4 h-4 mr-2" /> Archive
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
