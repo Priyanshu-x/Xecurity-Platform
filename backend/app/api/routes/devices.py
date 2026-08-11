@@ -45,6 +45,16 @@ async def update_device(id: str, req: DeviceUpdate, db: AsyncSession = Depends(g
         
     return await device_repository.update(db, db_obj=device, obj_in=req.model_dump(exclude_unset=True))
 
+@router.delete("/{fingerprint}")
+async def delete_device(fingerprint: str, db: AsyncSession = Depends(get_db_session), current_user: User = Depends(require_owner)):
+    """Delete a device by machine fingerprint."""
+    device = await device_repository.get_by_fingerprint(db, fingerprint)
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+        
+    await device_repository.remove(db, id=device.id)
+    return {"success": True, "message": "Device deleted successfully"}
+
 from app.schemas.device import DeviceHeartbeatPayload, DeviceHeartbeatResponse
 from app.models.device import DeviceStatus
 from sqlalchemy.sql import func

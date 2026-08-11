@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
-import { Monitor, MoreHorizontal, FileText, CheckCircle, Clock, AlertTriangle, ShieldOff } from 'lucide-react';
+import React, { useState } from 'react';
+import { Monitor, MoreHorizontal, FileText, CheckCircle, Clock, AlertTriangle, ShieldOff, Trash2 } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { deviceService } from '@/features/devices/services/deviceService';
 import { toast } from 'sonner';
 
 import { DeviceStatus } from '@/features/devices/types';
@@ -27,6 +29,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
@@ -51,7 +60,21 @@ export default function DevicesPage() {
     }
   }, [user, router]);
 
+  const queryClient = useQueryClient();
   const { data: devices, isLoading, isError } = useDevices();
+  const [deletingDevice, setDeletingDevice] = useState<any>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: (fingerprint: string) => deviceService.remove(fingerprint),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['devices'] });
+      setDeletingDevice(null);
+      toast.success('Device deleted successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.detail?.message || 'Failed to delete device');
+    },
+  });
 
   const getStatusBadge = (status: DeviceStatus) => {
     switch (status) {
@@ -166,6 +189,14 @@ export default function DevicesPage() {
                       <DropdownMenuItem className="text-destructive focus:bg-destructive focus:text-destructive-foreground">
                         <ShieldOff className="w-4 h-4 mr-2" /> Block Device
                       </DropdownMenuItem>
+                      {user?.role === 'OWNER' && (
+                        <DropdownMenuItem 
+                          onClick={() => setDeletingDevice(device)}
+                          className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" /> Delete Device
+                        </DropdownMenuItem>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -174,6 +205,31 @@ export default function DevicesPage() {
           </TableBody>
         </Table>
       </div>
+
+      <Dialog open={!!deletingDevice} onOpenChange={(open) => !open && setDeletingDevice(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Device</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete the device 
+              <span className="font-bold text-foreground"> {deletingDevice?.hostname || deletingDevice?.fingerprint}</span>? 
+              This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button variant="outline" onClick={() => setDeletingDevice(null)}>
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={() => deletingDevice && deleteMutation.mutate(deletingDevice.fingerprint)}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? 'Deleting...' : 'Delete Device'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
