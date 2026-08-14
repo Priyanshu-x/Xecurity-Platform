@@ -5,13 +5,13 @@ from pydantic import BaseModel
 
 from app.core.database import get_db_session
 from app.models.user import User, UserRole
-from app.api.dependencies import require_role
+from app.api.deps import RoleChecker
 from app.repositories.trial_token import TrialTokenRepository
 from app.services.trial_token_service import TrialTokenService
 from app.schemas.trial_token import TrialTokenResponse, ManifestResponse
 
 router = APIRouter()
-require_admin = require_role([UserRole.OWNER, UserRole.ADMIN])
+require_admin = RoleChecker([UserRole.OWNER, UserRole.ADMIN])
 
 class GenerateTokenRequest(BaseModel):
     month: int
