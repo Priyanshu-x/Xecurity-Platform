@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
-from app.core.database import get_db
+from app.core.database import get_db_session
 from app.models.user import User, UserRole
 from app.api.dependencies import require_role
 from app.repositories.trial_token import TrialTokenRepository
@@ -17,7 +17,7 @@ class GenerateTokenRequest(BaseModel):
     month: int
     year: int
 
-def get_trial_token_service(db: AsyncSession = Depends(get_db)) -> TrialTokenService:
+def get_trial_token_service(db: AsyncSession = Depends(get_db_session)) -> TrialTokenService:
     repository = TrialTokenRepository(db)
     return TrialTokenService(repository)
 

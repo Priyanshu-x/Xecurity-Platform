@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useTrialTokens, useGenerateTrialToken, useRevokeTrialToken, useManifest } from '@/features/trial-tokens/hooks/useTrialTokens';
 import { format } from 'date-fns';
-import { CheckCircle, AlertTriangle, Download, Plus, Trash2, Github } from 'lucide-react';
+import { CheckCircle, AlertTriangle, Download, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
