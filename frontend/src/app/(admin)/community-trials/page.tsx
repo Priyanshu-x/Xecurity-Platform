@@ -116,7 +116,7 @@ export default function CommunityTrialsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Month</label>
-                    <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                    <Select value={selectedMonth} onValueChange={(val) => { if(val) setSelectedMonth(val); }}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select month" />
                       </SelectTrigger>
@@ -131,7 +131,7 @@ export default function CommunityTrialsPage() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Year</label>
-                    <Select value={selectedYear} onValueChange={setSelectedYear}>
+                    <Select value={selectedYear} onValueChange={(val) => { if(val) setSelectedYear(val); }}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select year" />
                       </SelectTrigger>
