@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     LICENSE_PRIVATE_KEY: str = ""
     CORS_ORIGINS: str = "*"
     STORAGE_PATH: str = "uploads"
+    GITHUB_PAT: str = ""
+    GITHUB_TARGET_REPO: str = "Priyanshu-x/WFA-Releases"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

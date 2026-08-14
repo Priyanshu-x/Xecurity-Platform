@@ -12,3 +12,4 @@ from app.models.device import Device, DeviceStatus
 from app.models.activation_request import ActivationRequest
 from app.models.activation_request_event import ActivationRequestEvent
 from app.models.license_artifact import LicenseArtifact
+from app.models.trial_token import TrialToken

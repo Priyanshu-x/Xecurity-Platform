@@ -3,7 +3,7 @@
 import { useAuth } from '@/features/auth/authContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { LogOut, LayoutDashboard, Key, Users, Building, Package, ShieldCheck, Zap, Layers, CreditCard, Monitor } from 'lucide-react';
+import { LogOut, LayoutDashboard, Key, Users, Building, Package, ShieldCheck, Zap, Layers, CreditCard, Monitor, CheckCircle } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, user, logoutState } = useAuth();
@@ -34,6 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Products', icon: Package, href: '/products', roles: ['OWNER', 'ADMIN'] },
     { name: 'Plans', icon: Layers, href: '/plans', roles: ['OWNER', 'ADMIN', 'VIEWER'] },
     { name: 'Releases', icon: Package, href: '/releases', roles: ['OWNER', 'ADMIN', 'SUPPORT', 'VIEWER'] },
+    { name: 'Community Trials', icon: CheckCircle, href: '/community-trials', roles: ['OWNER', 'ADMIN'] },
     { name: 'Users', icon: Users, href: '/users', roles: ['OWNER'] },
   ];
 
