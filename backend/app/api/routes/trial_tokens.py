@@ -18,8 +18,7 @@ class GenerateTokenRequest(BaseModel):
     year: int
 
 def get_trial_token_service(db: AsyncSession = Depends(get_db_session)) -> TrialTokenService:
-    repository = TrialTokenRepository(db)
-    return TrialTokenService(repository)
+    return TrialTokenService(db)
 
 @router.get("", response_model=List[TrialTokenResponse])
 async def get_all_tokens(

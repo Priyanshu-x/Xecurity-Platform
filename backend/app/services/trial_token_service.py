@@ -8,13 +8,16 @@ from app.repositories.trial_token import TrialTokenRepository
 from app.services.github_service import GitHubService
 from app.schemas.trial_token import TrialTokenCreate, TrialTokenResponse, ManifestResponse
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 class TrialTokenService:
-    def __init__(self, repository: TrialTokenRepository):
-        self.repository = repository
+    def __init__(self, db: AsyncSession):
+        self.repository = TrialTokenRepository()
+        self.db = db
         self.github_service = GitHubService()
 
     async def get_active_manifest(self) -> ManifestResponse:
-        token = await self.repository.get_active_token()
+        token = await self.repository.get_active_token(self.db)
         
         if not token or token.expires_at < datetime.now(timezone.utc):
             return ManifestResponse(
@@ -39,7 +42,7 @@ class TrialTokenService:
 
     async def get_all_tokens(self) -> List[TrialToken]:
         # Using the base repository get_multi
-        return await self.repository.get_multi(limit=100)
+        return await self.repository.get_multi(self.db, limit=100)
 
     async def generate_token(self, month: int, year: int) -> TrialToken:
         # Validate month
@@ -50,7 +53,7 @@ class TrialTokenService:
         token_string = f"WFA-TRIAL-{month_abbr}-{year}"
         
         # Check if exists
-        existing = await self.repository.get_multi(limit=100)
+        existing = await self.repository.get_multi(self.db, limit=100)
         for t in existing:
             if t.token_string == token_string:
                 raise HTTPException(status_code=400, detail=f"Token {token_string} already exists")
@@ -60,12 +63,13 @@ class TrialTokenService:
         expires_at = datetime(year, month, last_day, 23, 59, 59, tzinfo=timezone.utc)
 
         # Invalidate existing active tokens
-        active_token = await self.repository.get_active_token()
+        active_token = await self.repository.get_active_token(self.db)
         if active_token:
-            await self.repository.update(db_obj=active_token, obj_in={"is_active": False})
+            await self.repository.update(db=self.db, db_obj=active_token, obj_in={"is_active": False})
 
         # Create new token
         new_token = await self.repository.create(
+            db=self.db,
             obj_in=TrialTokenCreate(
                 token_string=token_string,
                 expires_at=expires_at,
@@ -78,11 +82,11 @@ class TrialTokenService:
         return new_token
 
     async def revoke_token(self, token_id: str) -> TrialToken:
-        token = await self.repository.get(id=token_id)
+        token = await self.repository.get(db=self.db, id=token_id)
         if not token:
             raise HTTPException(status_code=404, detail="Token not found")
             
-        updated = await self.repository.update(db_obj=token, obj_in={"is_active": False})
+        updated = await self.repository.update(db=self.db, db_obj=token, obj_in={"is_active": False})
         
         # Sync with GitHub
         await self.sync_github_manifest()
